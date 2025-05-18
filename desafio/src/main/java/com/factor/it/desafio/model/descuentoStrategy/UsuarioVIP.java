@@ -8,16 +8,19 @@ import com.factor.it.desafio.model.ItemCarrito;
 
 public class UsuarioVIP implements Descuento {
     @Override
-    public float calcularDescuento(Carrito carrito) {
-        float descuento = 500;
+    public Double calcularDescuento(Carrito carrito) {
+        Double descuento = 500.0;
 
-        //se bonifica el producto más barato
-        Optional<ItemCarrito> masBarato = carrito.getItemsCarrito().stream()
-            .min(Comparator.comparingDouble(item -> item.calcularTotal()));
+        //se bonifica el producto más barato - en caso de tener mas de un producto
+        if(carrito.getItemsCarrito().size() > 1 ){
+            // busco el producto mas barato dentro de los items del carrito
+            Optional<ItemCarrito> masBarato = carrito.getItemsCarrito().stream()
+                .min(Comparator.comparingDouble(item -> item.getProducto().getPrecio()));
 
-        if (masBarato.isPresent()) {
-            //se bonifica el total de ese producto
-            descuento += masBarato.get().calcularTotal();
+            if (masBarato.isPresent()) {
+                //se bonifica el precio del producto mas barato
+                descuento += masBarato.get().getProducto().getPrecio();
+            }
         }
 
 

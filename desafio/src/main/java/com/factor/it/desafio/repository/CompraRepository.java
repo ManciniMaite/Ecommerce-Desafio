@@ -1,7 +1,6 @@
 package com.factor.it.desafio.repository;
 
 import java.sql.Date;
-import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -19,6 +18,6 @@ public interface CompraRepository extends CrudRepository<Compra, Long> {
         WHERE c.cliente_id = :id 
         AND  DATE(c.fecha_compra) BETWEEN DATE(:fecha1) AND DATE(:fecha2);
     """, nativeQuery = true)
-    float findByClienteIdyFechas(@Param("id") Long id, @Param("fecha1") Date fecha1, @Param("fecha2") Date fecha2);
+    Double findByClienteIdyFechas(@Param("id") Long id, @Param("fecha1") Date fecha1, @Param("fecha2") Date fecha2);
 
 }

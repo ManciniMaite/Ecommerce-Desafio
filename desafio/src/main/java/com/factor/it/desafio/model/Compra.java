@@ -23,10 +23,9 @@ public class Compra {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Date fechaCompra;
-    private float subTotal; //total sin descuento
-    private float montoDescuento;
-    private float total; //total con descuento
-    private float descuento; 
+    private Double subTotal; //total sin descuento
+    private Double montoDescuento;
+    private Double total; //total con descuento
     
     @OneToMany(mappedBy = "compra", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference

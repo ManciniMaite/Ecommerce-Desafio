@@ -1,15 +1,14 @@
 package com.factor.it.desafio.model;
 
-import java.util.UUID;
-
 import lombok.Data;
 
 @Data
 public class ItemCarrito {
     private int cantidad;
     private Producto producto; 
+    private Double total;
 
-    public float calcularTotal(){
+    public Double calcularTotal(){
         return this.producto.getPrecio() * this.cantidad;
     }
 }

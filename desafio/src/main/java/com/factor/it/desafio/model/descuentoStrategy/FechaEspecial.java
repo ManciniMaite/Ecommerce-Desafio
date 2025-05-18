@@ -4,7 +4,7 @@ import com.factor.it.desafio.model.Carrito;
 
 public class FechaEspecial implements Descuento {
     @Override
-    public float calcularDescuento(Carrito carrito) {
-        return (float) 300;
+    public Double calcularDescuento(Carrito carrito) {
+        return 300.0;
     }
 }
