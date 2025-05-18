@@ -48,34 +48,40 @@ public class CarritoService {
     private Map<UUID, Carrito> carritos = new HashMap<>();
 
     public Carrito crearCarrito(CarritoCrearRq rq) {
-        System.out.println("CREAR CARRITO");
+
+        //un solo carrito activo por usuario
+        Optional<Carrito> carritoExistente = carritos.values().stream()
+            .filter(c -> c.getCliente().getNroDocumento().equals(rq.getUsuario()))
+            .findFirst();
+
+        if (carritoExistente.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "El usuario ya tiene un carrito activo");
+        }
+
+
         Carrito carrito = new Carrito();
-        System.out.println("nuevo CARRITO");
         carrito.setId(UUID.randomUUID());
 
+        carrito.setFecha(rq.getFecha());
+
         //buscamos el usuario
-        System.out.println("buscar us");
         Optional<Usuario> usuario = this.usuarioService.findByNroDocumento(rq.getUsuario());
 
         if(usuario.isPresent()){
-            System.out.println("setCliente");
             carrito.setCliente(usuario.get());
         }else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Usuario no encontrado con documento: " + rq.getUsuario());
         }
 
-        System.out.println("buscar Fecha");
         Optional<FechaEspecial> promocionPorFecha = this.fechaEspecialRepository.findByFecha(rq.getFecha());
 
         //se prioriza la promocion por fecha
         if(promocionPorFecha.isPresent()){
-            System.out.println("carrito por fecha");
             com.factor.it.desafio.model.descuentoStrategy.FechaEspecial descuento = new com.factor.it.desafio.model.descuentoStrategy.FechaEspecial();
             carrito.setDescuento(descuento);
         } else{
             boolean esVIP = this.usuarioService.esClienteVIP(rq.getUsuario(),rq.getFecha());
             if(esVIP){
-                System.out.println("CArrito cliente VIP");
                 UsuarioVIP descuento = new UsuarioVIP();
                 carrito.setDescuento(descuento);
             } else{
@@ -86,13 +92,11 @@ public class CarritoService {
         }
 
         if(rq.getAgregarProducto() == null){
-            System.out.println("Agregar producto null");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No es posible inicializar un carrito vacio.");
         }
 
         carritos.put(carrito.getId(), carrito);
 
-        System.out.println("set IdCarrito al aggRq: "+ carrito.getId());
         rq.getAgregarProducto().setIdCarrito(carrito.getId());
         carrito = this.agregarProducto(rq.getAgregarProducto());
 
@@ -100,7 +104,6 @@ public class CarritoService {
     }
 
     public Carrito agregarProducto(CarritoAgregarProductoRq rq) {
-        System.out.println("Agregar a carrito: " + rq.getIdCarrito());
         Carrito carrito = carritos.get(rq.getIdCarrito());
         if (carrito == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado");
@@ -178,8 +181,8 @@ public class CarritoService {
         return carritos.get(carritoId);
     }
 
-    public Compra finalizarCarrito(CarritoFinalizarRq rq) {
-        Carrito carrito = carritos.get(rq.getIdCarrito());
+    public Compra finalizarCarrito(UUID idCarrito) {
+        Carrito carrito = carritos.get(idCarrito);
         if (carrito == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado");
         }
@@ -187,7 +190,7 @@ public class CarritoService {
         //Crear la compra para luego persistirla
         Compra compra = new Compra();
         compra.setCliente(carrito.getCliente());
-        compra.setFechaCompra(rq.getFecha());
+        compra.setFechaCompra(carrito.getFecha());
         compra.setSubTotal(carrito.getSubTotal()); //monto sin descuento
         compra.setMontoDescuento(carrito.getMontoDescuento()); //descuento
         compra.setTotal(carrito.getTotal()); //subtotal - decuento
@@ -209,7 +212,7 @@ public class CarritoService {
         this.compraRepository.save(compra);
 
         // Elimina carrito de memoria
-        carritos.remove(rq.getIdCarrito());
+        carritos.remove(idCarrito);
 
         return compra;
     }

@@ -43,9 +43,9 @@ public class CarritoRestController {
         return ResponseEntity.ok(carritoService.obtenerCarrito(id));
     }
 
-    @PostMapping("/finalizar")
-    public Compra finalizarCarrito(@RequestBody CarritoFinalizarRq rq) {
-        return this.carritoService.finalizarCarrito(rq);
+    @PostMapping("/finalizar/{idCarrito}")
+    public Compra finalizarCarrito(@PathVariable("idCarrito") UUID idCarrito) {
+        return this.carritoService.finalizarCarrito(idCarrito);
     }
 
     @DeleteMapping("/eliminar-producto")

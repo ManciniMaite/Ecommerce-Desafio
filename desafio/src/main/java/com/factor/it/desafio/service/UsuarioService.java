@@ -2,6 +2,7 @@ package com.factor.it.desafio.service;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,15 +25,16 @@ public class UsuarioService {
     }
 
     public boolean esClienteVIP(String nroDoc, Date fecha){
+        //ES CLIENTE VIP SI LAS COMPRAS DEL MES SUPERAN LOS 10000
         LocalDate localDate = fecha.toLocalDate();
-        LocalDate primerDiaMesAnterior = localDate.minusMonths(1).withDayOfMonth(1);
+        LocalDate primerDiaMes = localDate.withDayOfMonth(1);
 
-        Date mesAnterior = Date.valueOf(primerDiaMesAnterior);
+        Date mesActual = Date.valueOf(primerDiaMes);
 
         Optional<Usuario> us = this.findByNroDocumento(nroDoc);
         
         if(us.isPresent()){
-            Double totalCompras = compraRepository.findByClienteIdyFechas(us.get().getId(), fecha, mesAnterior);
+            Double totalCompras = compraRepository.findByClienteIdyFechas(us.get().getId(), fecha, mesActual);
             if (totalCompras == null) {
                 totalCompras = 0.0;
             }
@@ -42,24 +44,13 @@ public class UsuarioService {
         }
     }
 
-    public boolean esClienteVIP(String nroDoc, int mes, int anio){
-        LocalDate primerDiaDelMes = LocalDate.of(anio, mes, 1);
-        LocalDate ultimoDiaDelMes = LocalDate.of(anio, mes, 1).withDayOfMonth(LocalDate.of(anio, mes, 1).lengthOfMonth());
-
-        Date fecha1 = Date.valueOf(primerDiaDelMes);
-        Date fecha2 = Date.valueOf(ultimoDiaDelMes);
-
-        Optional<Usuario> us = this.findByNroDocumento(nroDoc);
-        
-        if(us.isPresent()){
-            Double totalCompras = compraRepository.findByClienteIdyFechas(us.get().getId(), fecha1, fecha2);
-            if (totalCompras == null) {
-                totalCompras = 0.0;
-            }
-            return totalCompras > 10000;
-        } else {
-            throw new IllegalArgumentException("Usuario no encontrado con documento: " + nroDoc);
-        }
+    public List<Usuario> obtenerUsuariosVIPEnMes(int mes, int anio) {
+        return usuarioRepository.findUsuariosVIPEnMes(anio, mes);
     }
+
+    public List<Usuario> obtenerUsuariosNoVIPEnMes(int mes, int anio) {
+        return usuarioRepository.findUsuariosNoVIP(anio, mes);
+    }
+
 }
 

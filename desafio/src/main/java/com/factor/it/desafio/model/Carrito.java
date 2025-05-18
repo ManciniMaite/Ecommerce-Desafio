@@ -1,5 +1,6 @@
 package com.factor.it.desafio.model;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,6 +18,8 @@ public class Carrito {
     private Double total; //total con descuento
 
     private Usuario cliente;
+
+    private Date fecha;
 
     public Double calcularTotal(){
         Double total = 0.0;

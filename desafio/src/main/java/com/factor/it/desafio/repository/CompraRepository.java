@@ -16,7 +16,7 @@ public interface CompraRepository extends CrudRepository<Compra, Long> {
             SUM(c.total)
         FROM compra c 
         WHERE c.cliente_id = :id 
-        AND  DATE(c.fecha_compra) BETWEEN DATE(:fecha1) AND DATE(:fecha2);
+        AND  DATE(c.fecha_compra) BETWEEN DATE(:fecha2) AND DATE(:fecha1);
     """, nativeQuery = true)
     Double findByClienteIdyFechas(@Param("id") Long id, @Param("fecha1") Date fecha1, @Param("fecha2") Date fecha2);
 
