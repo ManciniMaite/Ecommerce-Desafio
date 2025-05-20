@@ -1,5 +1,5 @@
-import { Component, Inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, HostListener, inject, Inject } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './header/header.component';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { HttpClientModule } from '@angular/common/http';
@@ -7,6 +7,7 @@ import { MAT_DIALOG_DATA, MatDialogRef, MatDialog, MatDialogModule } from '@angu
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { CarritoService } from './services/carrito.service';
 
 
 @Component({
@@ -17,6 +18,9 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
+  serviceCarritos = inject(CarritoService);
+  router=inject(Router);
+
   public filtroUsuario = '';
   public filtroFecha = '';
 
@@ -42,6 +46,13 @@ export class AppComponent {
       panelClass: ['custom-snackbar']
     });
   }
+
+  @HostListener('window:beforeunload', ['$event'])
+  handleBeforeUnload(event: BeforeUnloadEvent): void {
+    this.serviceCarritos.actualizarCarrito(null);
+    const url = 'http://localhost:8080/Carrito/eliminar-todos'; 
+    navigator.sendBeacon(url);
+  }
 }
 
 @Component({
@@ -64,6 +75,9 @@ export class ModalDialog {
 	}
 
 	onNoClick(): void {
+    if(this.data.onNoClick){
+      this.data.onNoClick();
+    }
 		this.dialogRef.close();
 	}
 	onAceptClick(){

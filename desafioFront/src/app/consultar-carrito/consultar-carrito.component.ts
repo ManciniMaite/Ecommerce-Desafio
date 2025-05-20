@@ -55,7 +55,7 @@ export class ConsultarCarritoComponent implements OnInit{
   }
 
   onDialogFinalizarCompra(){
-    this.dialog.open(ModalDialog, {
+    let dialog1 = this.dialog.open(ModalDialog, {
       disableClose: true,
       data: {
         tipo: 'info',
@@ -64,6 +64,21 @@ export class ConsultarCarritoComponent implements OnInit{
         cerrar: 'Cerrar',
         onAceptClick: ()=>{
           this.finalizarCompra();
+        },
+        onNoClick: ()=>{
+          dialog1.close();
+          let dialog2 = this.dialog.open(ModalDialog, {
+            disableClose: true,
+            data: {
+              tipo: 'info',
+              mensaje: "¿Queres seguir comprando?",
+              cerrar: 'Si',
+              textoAceptar:'No',
+              onAceptClick: ()=>{
+                this.eliminarCarrito();
+              }
+            }
+          });
         }
       }
     });
@@ -96,6 +111,27 @@ export class ConsultarCarritoComponent implements OnInit{
               cerrar: 'Cerrar'
             }
           });
+      }
+    });
+  }
+
+  eliminarCarrito(){
+    this.serviceCarrito.eliminarCarrito(this.carrito.id).subscribe({
+      next:(data)=>{
+        this.serviceCarrito.actualizarCarrito(null);
+        this.router.navigate(['']);
+      }, error: (error)=>{
+        console.log(error);
+        const mensajeError = error.error?.message || 'Ocurrió un error inesperado';
+        this.dialog.open(ModalDialog, {
+          disableClose: true,
+          data: {
+            tipo: 'error',
+            titulo: 'Error',
+            mensaje: mensajeError,
+            cerrar: 'Cerrar'
+          }
+        });
       }
     });
   }

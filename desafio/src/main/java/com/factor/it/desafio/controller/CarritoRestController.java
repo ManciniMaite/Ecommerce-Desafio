@@ -63,4 +63,13 @@ public class CarritoRestController {
         }
     }
     
+    @PostMapping("/eliminar-todos")
+    public ResponseEntity<?> eliminarCarritos() {
+        try {
+            carritoService.eliminarCarritos();
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
 }

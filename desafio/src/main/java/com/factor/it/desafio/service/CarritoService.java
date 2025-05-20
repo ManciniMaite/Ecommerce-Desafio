@@ -246,4 +246,8 @@ public class CarritoService {
         }
     }
 
+    public void eliminarCarritos() {
+        carritos.clear();
+    }
+
 }
