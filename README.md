@@ -20,7 +20,8 @@ Para poder ejecutar este proyecto de forma local:
 git clone https://github.com/ManciniMaite/Ecommerce-Desafio.git
 en un terminal ejecutar:
 * cd Ecommerce-Desafio
-* git checkout master 
+* git checkout master
+* git pull origin master
 
 para moverse a la rama master
 
