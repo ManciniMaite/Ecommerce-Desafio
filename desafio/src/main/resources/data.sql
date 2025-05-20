@@ -1,7 +1,7 @@
 DELETE FROM detalle_compra;
 DELETE FROM compra;
 DELETE FROM producto;
-INSERT INTO producto (id, precio, nombre, descricion) VALUES 
+INSERT INTO producto (id, precio, nombre, descripcion) VALUES 
 	(1,637.9, 'ZAPATILLAS NIKE AIR FORCE', 'Una confección clásica de los años 80 se combina con detalles audaces para tener un estilo que deja huella en la cancha y en la calle. Y como no podemos resistirnos, una combinación de colores especial para el Día de San Valentín endulza el look.'),
 	(2,667.9,'ZAPATILLAS NIKE AIR MAX 1','Conoce al líder de la manada. El Air Max 1 camina en las nubes sobre el ruido, mezcla un diseño atemporal y comodidad con amortiguación. Este ícono clásico llegó a la escena en el 87 y continúa siendo el alma de la franquicia hasta hoy.'),
 	(3,673.9,'ZAPATILLAS NIKE DUNK HIGH','El icono de los 80, que combina el estilo vintage con el ADN del básquetbol, vuelve con cuero premium suavizado impecablemente para ofrecer un look atemporal.'),
@@ -32,4 +32,35 @@ INSERT INTO fecha_especial (id, fecha) VALUES
     (1, '2025-05-18'),
     (2, '2025-07-01');
 
+DELETE FROM compra;
+INSERT INTO compra (fecha_compra, monto_descuento, sub_total, total, cliente_id, id) VALUES 
+('2025-05-18', 300, 637.9, 337.9, 1, 17),
+('2025-05-18', 300, 2003.7, 1703.7, 1, 18),
+('2025-05-18', 300, 12958, 12658, 1, 19),
+('2025-04-01', 2772.0251, 10688.101, 7916.075, 2, 20),
+('2025-04-01', 2105.175, 8020.7, 5915.5254, 2, 21),
+('2025-04-08', 500, 673.9, 173.90002, 2, 22),
+('2025-05-18', 300, 667.9, 367.90002, 2, 23),
+('2025-05-20', 0, 673.9, 673.9, 4, 24),
+('2025-05-20', 2294.25, 8777, 6482.75, 4, 25);
+
+
+DELETE FROM detalle_compra;
+INSERT INTO detalle_compra (cantidad, precio_unitario, subtotal, compra_id, id, producto_id) VALUES 
+(1, 637.9, 637.9, 17, 23, 1),
+(3, 667.9, 2003.7, 18, 24, 2),
+(10, 667.9, 6679, 19, 25, 2),
+(10, 627.9, 6279, 19, 26, 8),
+(6, 618.1, 3708.6, 20, 27, 5),
+(3, 627.9, 1883.7, 20, 28, 8),
+(3, 612.1, 1836.3, 20, 29, 15),
+(5, 651.9, 3259.5, 20, 30, 7),
+(3, 673.9, 2021.7, 21, 31, 3),
+(10, 599.9, 5999, 21, 32, 12),
+(1, 673.9, 673.9, 22, 33, 3),
+(1, 667.9, 667.9, 23, 34, 2),
+(1, 673.9, 673.9, 24, 35, 3),
+(7, 637.9, 4465.3003, 25, 36, 1),
+(3, 625.9, 1877.7001, 25, 37, 6),
+(4, 608.5, 2434, 25, 38, 13);
 

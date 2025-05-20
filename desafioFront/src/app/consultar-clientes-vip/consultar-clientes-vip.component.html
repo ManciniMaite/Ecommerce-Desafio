@@ -1,0 +1,65 @@
+<div class="container">
+    <div style="width: 80%;">
+        <button mat-icon-button (click)="onVolver()">
+            <mat-icon>arrow_back</mat-icon>
+        </button>
+        <mat-card>
+            <mat-card-content style="display: flex; flex-direction: column; gap: 5px;">
+                <div style="display: flex; flex-direction: row; gap: 5px; align-items: baseline;">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Mes</mat-label>
+                        <mat-select [(ngModel)]="mesSeleccionado">
+                        @for (mes of meses; track mes) {
+                            <mat-option [value]="mes">{{mes.nombre}}</mat-option>
+                        }
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Año</mat-label>
+                        <mat-select [(ngModel)]="anioSeleccionado">
+                        @for (anio of anios; track anio) {
+                            <mat-option [value]="anio">{{anio}}</mat-option>
+                        }
+                        </mat-select>
+                    </mat-form-field>
+                    <button mat-flat-button (click)="buscarClientes()" [disabled]="!(mesSeleccionado && anioSeleccionado)">Buscar clientes</button>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                    @if(usuariosVIP){
+                        <mat-expansion-panel (opened)="panelOpenState.set(true)" (closed)="panelOpenState.set(false)">
+                            <mat-expansion-panel-header>
+                            <mat-panel-title> Usuarios VIP en {{mesSeleccionado.nombre}} {{anioSeleccionado}}</mat-panel-title>
+                            </mat-expansion-panel-header>
+                            @if(usuariosVIP.length > 0){
+                                <ul>
+                                    @for (us of usuariosVIP; track us) {
+                                        <li>{{us.nombre + ' ' + us.apellido}}</li>
+                                    }
+                                </ul>
+                            } @else{
+                                No hay usuarios
+                            }
+                        </mat-expansion-panel>
+                    }
+                    @if(usuariosNoVIP){
+                        <mat-expansion-panel (opened)="panelOpenState.set(true)" (closed)="panelOpenState.set(false)">
+                            <mat-expansion-panel-header>
+                            <mat-panel-title> Usuarios que dejaron de ser VIP en {{mesSeleccionado.nombre}} {{anioSeleccionado}}</mat-panel-title>
+                            </mat-expansion-panel-header>
+                            @if(usuariosNoVIP.length > 0){
+                                <ul>
+                                    @for (us of usuariosNoVIP; track us) {
+                                        <li>{{us.nombre + ' ' + us.apellido}}</li>
+                                    }
+                                </ul>
+                            } @else{
+                                No hay usuarios
+                            }
+                        </mat-expansion-panel>
+                    }
+                </div>
+                
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

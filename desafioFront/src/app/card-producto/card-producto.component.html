@@ -1,0 +1,16 @@
+<mat-card class="example-card" appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>{{producto.nombre}}</mat-card-title>
+  </mat-card-header>
+   <img [src]="imagenUrl" alt="{{ producto.nombre }}">
+   <mat-card-content style="display: flex; justify-content: center; padding-top: 10px;">
+    <b>
+      <i>
+        $ {{producto.precio | number:'1.2-2'}}
+      </i>
+    </b>
+  </mat-card-content>
+  <mat-card-actions style="justify-content: center;">
+    <button style="width: 100%;"  (click)="verProducto()" mat-button>COMPRAR</button>
+  </mat-card-actions>
+</mat-card>

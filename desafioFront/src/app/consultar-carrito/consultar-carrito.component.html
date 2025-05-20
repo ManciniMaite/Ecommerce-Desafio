@@ -1,0 +1,27 @@
+<div class="container">
+    <div style="width: 80%;">
+        <button mat-icon-button (click)="onVolver()">
+            <mat-icon>arrow_back</mat-icon>
+        </button>
+        <mat-card>
+            <mat-card-content style="display: flex; flex-direction: row; gap: 5px;">
+                <div style="width: 70%;">
+                    @for (item of carrito.itemsCarrito; track item.producto.id) {
+                        <app-card-itm-carrito [item]="item"></app-card-itm-carrito>
+                    }
+                </div>
+                <div style="width: 30%;">
+                    <mat-card  appearance="outlined">
+                        <mat-card-content style="display: flex;flex-direction: column;">
+                            <p>SUBTOTAL: {{carrito.subTotal | number:'1.2-2'}}</p>
+                            <p>DESCUENTO: {{carrito.montoDescuento | number:'1.2-2'}}</p>
+                            <mat-divider></mat-divider>
+                            <p><b>TOTAL: {{carrito.total | number:'1.2-2'}}</b></p>
+                        </mat-card-content>
+                    </mat-card>
+                    <button mat-flat-button style="width: 100%; margin-top:5px" (click)="onDialogFinalizarCompra()">Finalizar compra</button>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

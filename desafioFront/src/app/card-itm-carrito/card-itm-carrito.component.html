@@ -1,0 +1,25 @@
+<mat-card class="example-card" appearance="outlined">
+    <mat-card-content style="display: flex;flex-direction: row;align-items: center;">
+        <img mat-card-sm-image [src]="imagenUrl">
+        <div class="div-info">
+            <mat-card-title class="nombre-producto">{{ item.producto.nombre }}</mat-card-title>
+
+            <div class="agregar-al-carrito">
+                <button mat-icon-button (click)="decrementarCantidad()">-</button>
+
+                <mat-form-field appearance="outline" class="cantidad-input">
+                    <input matInput placeholder="Placeholder" type="number" [(ngModel)]="cantidad" readonly />
+                </mat-form-field>
+
+                <button mat-icon-button (click)="incrementarCantidad()">+</button>
+
+                <b><i>$ {{ item.producto.precio | number:'1.2-2' }}</i></b>
+
+                <button mat-icon-button (click)="eliminar()">
+                <span class="material-symbols-outlined">delete</span>
+                </button>
+            </div>
+        </div>
+
+    </mat-card-content>
+</mat-card>

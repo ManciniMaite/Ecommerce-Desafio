@@ -1,0 +1,50 @@
+<div class="container">
+    <div style="max-width: 80%;">
+        <button mat-icon-button (click)="onVolver()">
+            <mat-icon>arrow_back</mat-icon>
+        </button>
+        <mat-card>
+            <mat-card-content class="info">
+                <img [src]="imagenUrl" alt="{{ producto.nombre }}">
+                <div style="display: flex; flex-direction: column; padding: 10px; width: 80%;">
+                    <div class="info-prodcuto">
+                        <mat-card-title>
+                            {{producto.nombre}}
+                        </mat-card-title>
+                        <div class="precio">
+                            <mat-card-title>
+                                <b>
+                                    <i>
+                                        $ {{producto.precio | number:'1.2-2'}}
+                                    </i>
+                                </b>
+                            </mat-card-title>
+                        </div>
+                    </div>
+                    <div class="info-prodcuto"> 
+                        <div class="agregar-al-carrito">
+                            <button mat-icon-button (click)="decrementarCantidad()">-</button>
+                            
+                            <mat-form-field  appearance="outline" style="width: 65px;">
+                                <input matInput placeholder="Placeholder" type="number" [(ngModel)]="cantidad" readonly />
+                            </mat-form-field>
+                            
+                            <button mat-icon-button (click)="incrementarCantidad()">+</button>
+                            <button mat-stroked-button (click)="agregarAlCarrito()" style="margin-left: 1rem; flex: 1;">
+                                Agregar al carrito
+                            </button>
+                        </div>
+                        <div style="display: flex;">
+                            <button  mat-flat-button (click)="comprar()" style="flex: 1; margin-left: 1rem;">
+                                Comprar
+                            </button>
+                        </div>
+                    </div>
+                    <div style="text-align: justify;">
+                        {{producto.descripcion}}
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>
