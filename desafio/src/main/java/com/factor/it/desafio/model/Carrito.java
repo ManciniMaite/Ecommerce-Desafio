@@ -1,6 +1,7 @@
 package com.factor.it.desafio.model;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,6 +17,8 @@ public class Carrito {
     private Double  subTotal; //total sin descuento
     private Double montoDescuento;
     private Double total; //total con descuento
+
+    private LocalDateTime ultimaActualizacion;
 
     private Usuario cliente;
 
@@ -36,5 +39,9 @@ public class Carrito {
     public Double calcularTotalConDescuento(){
         Double total = this.calcularTotal()-this.calcularDescuento();
         return total > 0 ? total : 0; //por si el descuento llega a ser mas grande que la compra
+    }
+
+    public void actualizar() {
+        this.ultimaActualizacion = LocalDateTime.now();
     }
 }

@@ -2,6 +2,7 @@ package com.factor.it.desafio.service;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -48,54 +50,52 @@ public class CarritoService {
     private Map<UUID, Carrito> carritos = new HashMap<>();
 
     public Carrito crearCarrito(CarritoCrearRq rq) {
-
-        //un solo carrito activo por usuario
+        Carrito carrito;
+        //un solo carrito activo por usuario y fecha
         Optional<Carrito> carritoExistente = carritos.values().stream()
-            .filter(c -> c.getCliente().getNroDocumento().equals(rq.getUsuario()))
+            .filter(c -> c.getCliente().getNroDocumento().equals(rq.getUsuario()) && c.getFecha().equals(rq.getFecha()))
             .findFirst();
 
         if (carritoExistente.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "El usuario ya tiene un carrito activo");
-        }
-
-
-        Carrito carrito = new Carrito();
-        carrito.setId(UUID.randomUUID());
-
-        carrito.setFecha(rq.getFecha());
-
-        //buscamos el usuario
-        Optional<Usuario> usuario = this.usuarioService.findByNroDocumento(rq.getUsuario());
-
-        if(usuario.isPresent()){
-            carrito.setCliente(usuario.get());
-        }else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Usuario no encontrado con documento: " + rq.getUsuario());
-        }
-
-        Optional<FechaEspecial> promocionPorFecha = this.fechaEspecialRepository.findByFecha(rq.getFecha());
-
-        //se prioriza la promocion por fecha
-        if(promocionPorFecha.isPresent()){
-            com.factor.it.desafio.model.descuentoStrategy.FechaEspecial descuento = new com.factor.it.desafio.model.descuentoStrategy.FechaEspecial();
-            carrito.setDescuento(descuento);
+            carrito = carritoExistente.get();
+            if(rq.getAgregarProducto() == null){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No hay producto para agregar");
+            }
+            //throw new ResponseStatusException(HttpStatus.CONFLICT, "El usuario ya tiene un carrito activo");
         } else{
-            boolean esVIP = this.usuarioService.esClienteVIP(rq.getUsuario(),rq.getFecha());
-            if(esVIP){
-                UsuarioVIP descuento = new UsuarioVIP();
+             carrito = new Carrito();
+            carrito.setId(UUID.randomUUID());
+            carrito.setFecha(rq.getFecha());
+            //buscamos el usuario
+            Optional<Usuario> usuario = this.usuarioService.findByNroDocumento(rq.getUsuario());
+    
+            if(usuario.isPresent()){
+                carrito.setCliente(usuario.get());
+            }else {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Usuario no encontrado con documento: " + rq.getUsuario());
+            }
+            Optional<FechaEspecial> promocionPorFecha = this.fechaEspecialRepository.findByFecha(rq.getFecha());
+    
+            //se prioriza la promocion por fecha
+            if(promocionPorFecha.isPresent()){
+                com.factor.it.desafio.model.descuentoStrategy.FechaEspecial descuento = new com.factor.it.desafio.model.descuentoStrategy.FechaEspecial();
                 carrito.setDescuento(descuento);
             } else{
-                System.out.println("Carrito comun");
-                Comun descuento = new Comun();
-                carrito.setDescuento(descuento);
+                boolean esVIP = this.usuarioService.esClienteVIP(rq.getUsuario(),rq.getFecha());
+                if(esVIP){
+                    UsuarioVIP descuento = new UsuarioVIP();
+                    carrito.setDescuento(descuento);
+                } else{
+                    System.out.println("Carrito comun");
+                    Comun descuento = new Comun();
+                    carrito.setDescuento(descuento);
+                }
             }
+            if(rq.getAgregarProducto() == null){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No es posible inicializar un carrito vacio.");
+            }
+            carritos.put(carrito.getId(), carrito);
         }
-
-        if(rq.getAgregarProducto() == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No es posible inicializar un carrito vacio.");
-        }
-
-        carritos.put(carrito.getId(), carrito);
 
         rq.getAgregarProducto().setIdCarrito(carrito.getId());
         carrito = this.agregarProducto(rq.getAgregarProducto());
@@ -122,6 +122,8 @@ public class CarritoService {
         }else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Producto no encontrado con id: " + rq.getIdProducto());
         }
+
+        carrito.actualizar();
 
         if(carrito.getItemsCarrito()==null || carrito.getItemsCarrito().isEmpty()){
 
@@ -223,6 +225,8 @@ public class CarritoService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado");
         }
 
+        carrito.actualizar();
+
         boolean eliminado = carrito.getItemsCarrito().removeIf(
             item -> item.getProducto().getId().equals(rq.getIdProducto())
         );
@@ -248,6 +252,15 @@ public class CarritoService {
 
     public void eliminarCarritos() {
         carritos.clear();
+    }
+
+    @Scheduled(fixedRate = 60000) // corre cada 1 min
+    public void eliminarCarritosInactivos() {
+        System.out.println("Eliminar carrito inactivo");
+        LocalDateTime limite = LocalDateTime.now().minusMinutes(5);
+        System.out.println(carritos.size());
+        carritos.entrySet().removeIf(c -> c.getValue().getUltimaActualizacion().isBefore(limite));
+        System.out.println(carritos.size());
     }
 
 }

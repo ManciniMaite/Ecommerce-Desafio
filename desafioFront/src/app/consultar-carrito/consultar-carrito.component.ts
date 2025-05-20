@@ -108,7 +108,11 @@ export class ConsultarCarritoComponent implements OnInit{
               tipo: 'error',
               titulo: 'Error',
               mensaje: mensajeError,
-              cerrar: 'Cerrar'
+              cerrar: 'Cerrar',
+              onNoClick: ()=> {
+                this.serviceCarrito.actualizarCarrito(null);
+                this.router.navigate(['']);
+              }
             }
           });
       }
